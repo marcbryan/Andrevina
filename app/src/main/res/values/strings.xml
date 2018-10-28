@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Andrevina</string>
+    <string name="endevina">Endevina</string>
+    <string name="intro">Introdueix un numero de l\'1 al 100</string>
+    <string name="nom">Nom</string>
+    <string name="intents">Intents</string>
 </resources>
