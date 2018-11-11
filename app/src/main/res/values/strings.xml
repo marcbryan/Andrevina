@@ -4,4 +4,6 @@
     <string name="intro">Introdueix un numero de l\'1 al 100</string>
     <string name="nom">Nom</string>
     <string name="intents">Intents</string>
+    <string name="dialog_title">Has encertat!!</string>
+    <string name="msg_dialog">Posa el teu nom per veure la taula de records</string>
 </resources>
