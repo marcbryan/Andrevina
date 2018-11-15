@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.Button;
 import android.view.View;
@@ -26,10 +27,22 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("Pista: "+numero);//pista
         final Button button = findViewById(R.id.button);
         final EditText eText = new EditText(this);
+        final TextView tv = (TextView) findViewById(R.id.numIntro);
+        tv.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN){
+                    if (keyCode == KeyEvent.KEYCODE_ENTER){
+                        System.out.println("click");
+                        return true;
+                    }
+
+                }
+                return false;
+            }
+        });
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                TextView tv;
-                tv = (TextView) findViewById(R.id.numIntro);
                 String tvValue = tv.getText().toString();
                 final Context context = getApplicationContext();
                 CharSequence text = "";
@@ -40,12 +53,14 @@ public class MainActivity extends AppCompatActivity {
                         text = "El numero es mes gran";
                         Toast toast = Toast.makeText(context, text, duration);
                         toast.show();
+                        tv.setText("");
                         intentos++;
                     }
                     else if (num1 > numero){
                         text = "El numero es mes petit";
                         Toast toast = Toast.makeText(context, text, duration);
                         toast.show();
+                        tv.setText("");
                         intentos++;
                     }
                     else if (num1 == numero) {
