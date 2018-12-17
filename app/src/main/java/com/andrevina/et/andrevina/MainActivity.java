@@ -5,6 +5,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,10 +26,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     private int intentos;
     private boolean datosCargados = false;
+    static final int REQUEST_TAKE_PHOTO = 1;
+    private File photoFile = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +126,13 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         });
+                        ImageView abrirCamara = dialog.findViewById(R.id.abrirCamara);
+                        abrirCamara.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //openCamera();
+                            }
+                        });
                         dialog.show();
                     }
                 }
@@ -155,6 +170,54 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    private void openCamera() {
+        //Hacer foto con camara
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            try {
+                photoFile = createImageFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (photoFile != null) {
+                //Arreglar
+                Uri photoURI = FileProvider.getUriForFile(this, "com.camara.et.camaraex", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            Toast toast = Toast.makeText(getApplicationContext(), "Imagen guardada correctamente!", Toast.LENGTH_SHORT);
+            toast.show();
+            final Dialog dialog = new Dialog(MainActivity.this);
+            Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
+            dialogButton.setVisibility(View.VISIBLE);
+            ImageView abrirCamara = dialog.findViewById(R.id.abrirCamara);
+            abrirCamara.setVisibility(View.INVISIBLE);
+        } else {
+            if (photoFile.length() == 0){
+                photoFile.delete();
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);//ruta donde se guardara la foto
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+        return image;
     }
 
     @Override

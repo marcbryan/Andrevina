@@ -2,6 +2,7 @@
     <string name="app_name">Andrevina</string>
     <string name="endevina">Endevina</string>
     <string name="intro">Introdueix un numero de l\'1 al 100</string>
+    <string name="ok_button">OK</string>
     <string name="nom">Nom</string>
     <string name="intents">Intents</string>
     <string name="dialog_title">Has encertat!!</string>
