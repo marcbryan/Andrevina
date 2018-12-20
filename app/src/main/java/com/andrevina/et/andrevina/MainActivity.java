@@ -31,8 +31,10 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     private int intentos;
+    private Dialog dialog = null;
     private boolean datosCargados = false;
-    static final int REQUEST_TAKE_PHOTO = 1;
+    private boolean fotoRealizada = false;
+    private static final int REQUEST_TAKE_PHOTO = 1;
     private File photoFile = null;
 
     @Override
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                         text = "Has encertat!";
                         Toast toast = Toast.makeText(context, text, duration);
                         toast.show();
-                        final Dialog dialog = new Dialog(MainActivity.this);
+                        dialog = new Dialog(MainActivity.this);
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         dialog.setContentView(R.layout.custom_dialog);
                         final TextView nombre = (TextView) dialog.findViewById(R.id.txt);
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 String playerName = nombre.getText().toString();
-                                if (playerName.equals("")){
+                                if (playerName.equals("")) {
                                     dialog.dismiss();
                                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                                     alertDialog.setCancelable(false);
@@ -116,11 +118,26 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                     );
                                     alertDialog.show();
-                                }else {
+                                } else if (!fotoRealizada) {
+                                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                                    alertDialog.setCancelable(false);
+                                    alertDialog.setTitle("Fes una foto per guardar el teu record");
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int which) {
+                                                    dialogInterface.dismiss();
+                                                    dialog.show();
+                                                }
+                                            }
+                                    );
+                                    alertDialog.show();
+                                } else {
                                     Intent intent = new Intent(getApplicationContext(), FameActivity.class);
                                     String nombreJugador = nombre.getText().toString();
                                     intent.putExtra("EXTRA_INTENTOS", intentos+"");
                                     intent.putExtra("EXTRA_NAME", nombreJugador);
+                                    intent.putExtra("EXTRA_PATH", photoFile.getPath());
                                     dialog.dismiss();
                                     startActivity(intent);
                                 }
@@ -130,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                         abrirCamara.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                //openCamera();
+                                openCamera();
                             }
                         });
                         dialog.show();
@@ -161,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 while ((linea = br.readLine()) != null) {
                     if (linea.split(":").length == 2) {
                         String[] player = linea.split(":");
-                        Jugador.jugadors.add(new Jugador(player[0], Integer.parseInt(player[1])));
+                        Jugador.jugadors.add(new Jugador(player[0], Integer.parseInt(player[1]), player[2]));
                     }
                 }
                 br.close();
@@ -182,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             if (photoFile != null) {
-                //Arreglar
-                Uri photoURI = FileProvider.getUriForFile(this, "com.camara.et.camaraex", photoFile);
+                Uri photoURI = FileProvider.getUriForFile(this, "com.andrevina.et.andrevina", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
@@ -193,13 +209,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Imagen guardada correctamente!", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(getApplicationContext(), "Imatge guardada correctament!", Toast.LENGTH_SHORT);
             toast.show();
-            final Dialog dialog = new Dialog(MainActivity.this);
-            Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
-            dialogButton.setVisibility(View.VISIBLE);
+
+            //Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
+            //dialogButton.setVisibility(View.VISIBLE);
             ImageView abrirCamara = dialog.findViewById(R.id.abrirCamara);
             abrirCamara.setVisibility(View.INVISIBLE);
+            fotoRealizada = true;
         } else {
             if (photoFile.length() == 0){
                 photoFile.delete();

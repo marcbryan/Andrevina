@@ -5,11 +5,13 @@ import java.util.ArrayList;
 public class Jugador {
     private String nombre;
     private int intentos;
+    private String rutaFoto;
     static ArrayList<Jugador> jugadors = new ArrayList<Jugador>();
 
-    public Jugador(String nombre, int intentos) {
+    public Jugador(String nombre, int intentos, String rutaFoto) {
         this.nombre = nombre;
         this.intentos = intentos;
+        this.rutaFoto = rutaFoto;
     }
 
     public String getNombre() {
@@ -20,7 +22,8 @@ public class Jugador {
         return intentos;
 }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public String getRutaFoto() {
+        return rutaFoto;
     }
+
 }

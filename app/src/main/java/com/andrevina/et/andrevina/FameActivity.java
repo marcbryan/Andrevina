@@ -27,9 +27,10 @@ public class FameActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String str_intentos = intent.getStringExtra("EXTRA_INTENTOS");
         String player_Name = intent.getStringExtra("EXTRA_NAME");
+        String player_photo = intent.getStringExtra("EXTRA_PATH");
 
         if (str_intentos != null && player_Name != null) {
-            addRecordToFile(player_Name, str_intentos);
+            addRecordToFile(player_Name, str_intentos, player_photo);
         }
 
         if (Jugador.jugadors.size() != 0) {
@@ -80,7 +81,7 @@ public class FameActivity extends AppCompatActivity {
         }
     }
 
-    private void addRecordToFile(String nombre, String intentos){
+    private void addRecordToFile(String nombre, String intentos, String rtFoto){
         File f = new File(getFilesDir().getPath()+"/recordsAndrevina.txt");
         try {
             if (!f.exists()){
@@ -88,12 +89,12 @@ public class FameActivity extends AppCompatActivity {
             }
             FileOutputStream fos = new FileOutputStream(f, true);
             OutputStreamWriter writer = new OutputStreamWriter(fos);
-            writer.append(nombre+":"+intentos+System.lineSeparator());
+            writer.append(nombre+":"+intentos+":"+rtFoto+System.lineSeparator());
             writer.close();
             fos.flush();
             fos.close();
 
-            Jugador jugador = new Jugador(nombre, Integer.parseInt(intentos));
+            Jugador jugador = new Jugador(nombre, Integer.parseInt(intentos), rtFoto);
             Jugador.jugadors.add(jugador);
 
         } catch (IOException e){
