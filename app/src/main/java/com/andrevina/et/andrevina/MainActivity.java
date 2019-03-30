@@ -11,7 +11,6 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.Button;
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String tvValue = numIntro.getText().toString();
                 final Context context = getApplicationContext();
-                CharSequence text = "";
+                CharSequence text;
                 int duration = Toast.LENGTH_LONG;
                 if (!tvValue.equals("")) {
                     int num1 = Integer.parseInt(tvValue);
@@ -174,9 +173,9 @@ public class MainActivity extends AppCompatActivity {
                 FileInputStream fis = new FileInputStream(f);
                 BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 
-                String linea = "";
+                String linea;
                 while ((linea = br.readLine()) != null) {
-                    if (linea.split(":").length == 2) {
+                    if (linea.split(":").length == 3) {
                         String[] player = linea.split(":");
                         Jugador.jugadors.add(new Jugador(player[0], Integer.parseInt(player[1]), player[2]));
                     }
@@ -211,9 +210,6 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             Toast toast = Toast.makeText(getApplicationContext(), "Imatge guardada correctament!", Toast.LENGTH_SHORT);
             toast.show();
-
-            //Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
-            //dialogButton.setVisibility(View.VISIBLE);
             ImageView abrirCamara = dialog.findViewById(R.id.abrirCamara);
             abrirCamara.setVisibility(View.INVISIBLE);
             fotoRealizada = true;

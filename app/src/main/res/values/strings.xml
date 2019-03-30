@@ -8,4 +8,5 @@
     <string name="dialog_title">Has encertat!!</string>
     <string name="msg_dialog">Posa el teu nom per veure la taula de records</string>
     <string name="records">Records</string>
+    <string name="image">Imatge jugador</string>
 </resources>

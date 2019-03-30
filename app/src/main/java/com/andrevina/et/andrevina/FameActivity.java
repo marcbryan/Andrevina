@@ -3,17 +3,13 @@ package com.andrevina.et.andrevina;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.ListView;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -23,16 +19,16 @@ public class FameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fame);
-        LinearLayout vertic = findViewById(R.id.vertical);
         Intent intent = getIntent();
-        String str_intentos = intent.getStringExtra("EXTRA_INTENTOS");
-        String player_Name = intent.getStringExtra("EXTRA_NAME");
-        String player_photo = intent.getStringExtra("EXTRA_PATH");
+        if (!intent.getBooleanExtra("VER_RECORDS", false)) {
+            String str_intentos = intent.getStringExtra("EXTRA_INTENTOS");
+            String player_Name = intent.getStringExtra("EXTRA_NAME");
+            String player_photo = intent.getStringExtra("EXTRA_PATH");
 
-        if (str_intentos != null && player_Name != null) {
-            addRecordToFile(player_Name, str_intentos, player_photo);
+            if (str_intentos != null && player_Name != null) {
+                addRecordToFile(player_Name, str_intentos, player_photo);
+            }
         }
-
         if (Jugador.jugadors.size() != 0) {
             //Ordena los jugadores por el numero de intentos mas bajo
             Collections.sort(Jugador.jugadors, new Comparator<Jugador>() {
@@ -42,37 +38,23 @@ public class FameActivity extends AppCompatActivity {
                 }
             });
 
-            //Coloca los jugadores que existan en la tabla de records
-            for (int i=0; i < Jugador.jugadors.size(); i++) {
-                LinearLayout linearLayout = new LinearLayout(this);
-                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-                LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(0, 100);
-                lparams.weight = 1;
-
-                TextView nom_jug = new TextView(this);
-                nom_jug.setTextSize(20);
-                nom_jug.setText(Jugador.jugadors.get(i).getNombre());
-                nom_jug.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                nom_jug.setLayoutParams(lparams);
-
-                TextView intents_jug = new TextView(this);
-                intents_jug.setTextSize(20);
-                intents_jug.setText(Jugador.jugadors.get(i).getIntentos() + "");
-                intents_jug.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                intents_jug.setLayoutParams(lparams);
-
-                linearLayout.addView(nom_jug);
-                linearLayout.addView(intents_jug);
-                vertic.addView(linearLayout);
-            }
+            // Crea el array para el adapter
+            ArrayList<Jugador> arrayJugadores = new ArrayList<Jugador>();
+            // Añade todos los jugadores al array
+            arrayJugadores.addAll(Jugador.jugadors);
+            // Crea el adapter para convertir el array en la lista
+            JugadoresAdapter adapter = new JugadoresAdapter(this, arrayJugadores);
+            // Asigna el adapter al ListView
+            ListView listView = (ListView) findViewById(R.id.lvItems);
+            listView.setAdapter(adapter);
         }
     }
 
     @Override
     public void onBackPressed(){
         Intent intVR = getIntent();
-        if (intVR.getBooleanExtra("VER_RECORDS", false) == true){
+        if (intVR.getBooleanExtra("VER_RECORDS", false)){
             finish();
         } else {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -89,7 +71,8 @@ public class FameActivity extends AppCompatActivity {
             }
             FileOutputStream fos = new FileOutputStream(f, true);
             OutputStreamWriter writer = new OutputStreamWriter(fos);
-            writer.append(nombre+":"+intentos+":"+rtFoto+System.lineSeparator());
+            String datos = nombre+":"+intentos+":"+rtFoto+System.lineSeparator();
+            writer.append(datos);
             writer.close();
             fos.flush();
             fos.close();
